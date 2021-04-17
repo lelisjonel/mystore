@@ -16,7 +16,7 @@ Class MyStore {
 			$this->con = new PDO($this->server, $this->user, $this->pass, $this->options);
 			return $this->con;
 
-		}catch(PDOExeption $e)
+		}catch(PDOException $e)
 		{
 			echo "There is a problem in the connection: " . $e->getMessage();
 		}
