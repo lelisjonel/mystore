@@ -202,8 +202,8 @@ Class MyStore {
 	public function get_single_product($id)
 	{
 		$connection = $this->openConnection();
-		$stmt = $connection->prepare("SELECT product_name, product_type, min_stocks, SUM(qty) AS total FROM (SELECT * FROM products WHERE products.ID = ?) t1 INNER JOIN product_items t2 ON t1.ID = t2.product_id");
-		// $stmt = $connection->prepare("SELECT * FROM products WHERE ID = ?");
+		$stmt = $connection->prepare("SELECT *,product_name, product_type, min_stocks, SUM(qty) AS total FROM (SELECT * FROM products WHERE products.ID = ?) t1 INNER JOIN product_items t2 ON t1.ID = t2.product_id");
+		
 		$stmt->execute([$id]);
 		$product = $stmt->fetch();
 		$total = $stmt->rowCount();
@@ -250,11 +250,30 @@ Class MyStore {
 
 
 			$connection = $this->openConnection();
-			$stmt = $connection->prepare("INSERT INTO product_items ( `product_id`, `qty`, `vendor_name`,`batch_number`, `added_by`) VALUES (?,?,?,?,?)");
-			$stmt->execute([$product_id,$qty,$brand_name,$batch_number,$added_by]);
+			$stmt = $connection->prepare("INSERT INTO product_items ( `product_id`, `qty`, `vendor_name`, `added_by`,`batch_number`) VALUES (?,?,?,?,?)");
+			$stmt->execute([$product_id,$qty,$brand_name,$added_by,$batch_number]);
 			header("Location: product_details.php?id=".$product_id);
 
 		}
+
+	
+	}
+
+	public function view_all_stocks($product_id)
+	{
+		 $connection = $this->openConnection();
+		 $stmt = $connection->prepare("SELECT * FROM product_items WHERE product_id = ?");
+		 $stmt->execute([$product_id]);
+		 $stocks = $stmt->fetchAll();
+		 $total = $stmt->rowCount();
+
+		 if ($total > 0)
+		 {
+			 return $stocks;
+		 } else {
+			 return false;
+		 }
+			
 	}
 
 
